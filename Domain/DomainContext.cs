@@ -36,8 +36,6 @@ namespace Domain
 
             modelBuilder.Entity<CustomOption>()
                 .HasKey(o => new { o.OrderId, o.ProductId, o.OptionId });
-            //modelBuilder.Entity<CustomOption>()
-            //    .HasOne(o => o.Order).WithMany().HasForeignKey(o => o.OrderId);
             modelBuilder.Entity<CustomOption>()
                 .HasOne(o => o.Product).WithMany().HasForeignKey(o => o.ProductId);
             modelBuilder.Entity<CustomOption>()
