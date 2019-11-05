@@ -23,9 +23,9 @@ namespace OrderManager.Controllers
 
         // GET: api/values
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<ProductDTO> Get()
         {
-            return new string[] { "value1", "value2" };
+            return _productSvc.GetProducts();
         }
 
         // GET api/values/5

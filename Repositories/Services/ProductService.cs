@@ -91,5 +91,13 @@ namespace DAL.Services
 
             return result;
         }
+
+        public ProductDTO[] GetProducts()
+        {
+            return _unitOfWork.ProductRepository.FindAll()
+                .ToArray()
+                .Select(p => ConvertToDTO(p))
+                .ToArray();
+        }
     }
 }
