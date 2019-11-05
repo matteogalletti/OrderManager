@@ -15,6 +15,11 @@ namespace DAL.Repositories
             this.DomainContext = domainContext;
         }
 
+        public IQueryable<T> FindAll()
+        {
+            return this.DomainContext.Set<T>();
+        }
+
         public IQueryable<T> Find(Expression<Func<T, bool>> expression)
         {
             return this.DomainContext.Set<T>()

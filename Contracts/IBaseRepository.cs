@@ -6,6 +6,8 @@ namespace Contracts
 {
     public interface IBaseRepository<T>
     {
+        IQueryable<T> FindAll();
+
         IQueryable<T> Find(Expression<Func<T, bool>> expression);
 
         void Create(T entity);

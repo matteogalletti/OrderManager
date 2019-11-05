@@ -8,8 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace OrderManager.Controllers
 {
-    [Route("api/[controller]")]
-    public class OrdersController : Controller
+    [ApiController]
+    [Route("[controller]")]
+    public class OrdersController : ControllerBase
     {
         // GET: api/values
         [HttpGet]
