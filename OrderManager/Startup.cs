@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Contracts;
+using Contracts.Services;
 using DAL;
+using DAL.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -31,6 +33,7 @@ namespace OrderManager
             services.AddControllers();
             services.ConfigureSqliteContext(Configuration);
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IProductService, ProductService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

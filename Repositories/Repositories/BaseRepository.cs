@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using Contracts;
+using DAL.Extensions;
 using Domain;
 
 namespace DAL.Repositories
@@ -17,12 +18,14 @@ namespace DAL.Repositories
 
         public IQueryable<T> FindAll()
         {
-            return this.DomainContext.Set<T>();
+            return this.DomainContext.Set<T>()
+                .Include(DomainContext.GetIncludePaths(typeof(T)));
         }
 
         public IQueryable<T> Find(Expression<Func<T, bool>> expression)
         {
             return this.DomainContext.Set<T>()
+                .Include(DomainContext.GetIncludePaths(typeof(T)))
                 .Where(expression);
         }
 
