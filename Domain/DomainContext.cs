@@ -14,11 +14,34 @@ namespace Domain
 
         public DbSet<Category> Categories { get; set; }
 
+        public DbSet<ProductOption> ProductOptions { get; set; }
+
+        public DbSet<Order> Orders { get; set; }
+
+        public DbSet<CustomOption> CustomOptions { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite(@"Filename=OrderDB.db");
 
             base.OnConfiguring(optionsBuilder);
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.CustomOptions)
+                .WithOne(co => co.Order)
+                .HasForeignKey(co => co.OrderId);
+
+            modelBuilder.Entity<CustomOption>()
+                .HasKey(o => new { o.OrderId, o.ProductId, o.OptionId });
+            //modelBuilder.Entity<CustomOption>()
+            //    .HasOne(o => o.Order).WithMany().HasForeignKey(o => o.OrderId);
+            modelBuilder.Entity<CustomOption>()
+                .HasOne(o => o.Product).WithMany().HasForeignKey(o => o.ProductId);
+            modelBuilder.Entity<CustomOption>()
+                .HasOne(o => o.ProductOption).WithMany().HasForeignKey(o => o.OptionId);
         }
 
     }
