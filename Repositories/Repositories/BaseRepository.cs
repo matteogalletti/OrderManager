@@ -2,10 +2,11 @@
 using System.Linq;
 using System.Linq.Expressions;
 using Contracts;
+using Domain;
 
-namespace Domain.Repositories
+namespace DAL.Repositories
 {
-    public class BaseRepository<T> : IBaseRepository<T> where T:class
+    public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         protected DomainContext DomainContext { get; set; }
 
