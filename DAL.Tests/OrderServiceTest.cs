@@ -24,7 +24,7 @@ namespace DAL.Tests
 
             var svc = new OrderService(null);
 
-            var orderId = svc.CreateOrder(dto, DateTime.Now, out string errorMessage);
+            var orderId = svc.CreateOrder(dto, out string errorMessage);
 
             Assert.IsNull(orderId);
             Assert.AreEqual("Id must be null", errorMessage);
@@ -40,7 +40,7 @@ namespace DAL.Tests
 
             var svc = new OrderService(null);
 
-            var orderId = svc.CreateOrder(dto, DateTime.Now, out string errorMessage);
+            var orderId = svc.CreateOrder(dto, out string errorMessage);
 
             Assert.IsNull(orderId);
             Assert.AreEqual("Empty product list", errorMessage);
@@ -67,7 +67,7 @@ namespace DAL.Tests
             };
 
             var svc = new OrderService(null);
-            var orderId = svc.CreateOrder(dto, DateTime.Now, out string errorMessage);
+            var orderId = svc.CreateOrder(dto, out string errorMessage);
 
             Assert.IsNull(orderId);
             Assert.AreEqual("Order contains products with invalid id", errorMessage);
@@ -110,7 +110,7 @@ namespace DAL.Tests
 
             var svc = new OrderService(uowMock.Object);
 
-            var orderId = svc.CreateOrder(dto, DateTime.Now, out string errorMessage);
+            var orderId = svc.CreateOrder(dto, out string errorMessage);
             Assert.IsNull(orderId);
             Assert.AreEqual("Order contains not existing products", errorMessage);
 
@@ -165,7 +165,7 @@ namespace DAL.Tests
 
             var svc = new OrderService(uowMock.Object);
 
-            var orderId = svc.CreateOrder(dto, DateTime.Now, out string errorMessage);
+            var orderId = svc.CreateOrder(dto, out string errorMessage);
             Assert.IsNull(orderId);
             Assert.AreEqual("Products do not belong to same category", errorMessage);
         }

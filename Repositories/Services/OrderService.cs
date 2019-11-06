@@ -17,16 +17,46 @@ namespace DAL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public string CreateOrder(OrderDTO order, DateTime creationDate, out string errorMessage)
+        public string CreateOrder(OrderDTO order, out string errorMessage)
         {
             if (!ValidateCreateOrderRequest(order, out errorMessage))
             {
                 return null;
             }
 
-            //TODO: Create and save order
+            try
+            {
+                var toSave = ConvertToNewOrder(order);
+                _unitOfWork.OrderRepository.Create(toSave);
+                _unitOfWork.Save();
+                return toSave.Id.ToString();
+            }
+            catch (Exception)
+            {
+                errorMessage = "Error saving new order";
+                return null;
+            }
+        }
 
-            return null;
+        //Returns a list of all orders
+        //Only id and creationDate are returned for each order
+        public OrderDTO[] GetOrders()
+        {
+            var orders = _unitOfWork.OrderRepository.FindAll().ToArray();
+            return orders.Select(o => ConvertToDTO(o)).ToArray();
+        }
+        
+        public OrderDTO GetOrder(string id)
+        {
+            if (!Guid.TryParse(id, out Guid guid))
+                return null;
+
+            var order = _unitOfWork.OrderRepository.Find(o => o.Id == guid)
+                .FirstOrDefault();
+            if (order == null) return null;
+
+
+            return ConvertToDTO(order, convertProducts: true);
         }
 
         private bool ValidateCreateOrderRequest(OrderDTO order, out string errorMessage)
@@ -69,6 +99,7 @@ namespace DAL.Services
             if (categories.Length != 1)
             {
                 errorMessage = "Products do not belong to same category";
+                return false;
             }
 
             var optionsValidationErrors = new List<string>();
@@ -109,6 +140,101 @@ namespace DAL.Services
             var relatedProductOptionIds = relatedProduct.BaseOptions.Select(o => o.Id);
 
             return optionIds.All(oId => relatedProductOptionIds.Contains(oId));
+        }
+
+        private Order ConvertToNewOrder(OrderDTO dto)
+        {
+            var orderId = Guid.NewGuid();
+            var result = new Order
+            {
+                Id = orderId,
+                CreationDate = DateTime.Now,
+                Products = new List<OrderProduct>()
+            };
+            var customOptions = new List<CustomOption>();
+
+            foreach (var product in dto.Products)
+            {
+                var productId = Guid.Parse(product.Id);
+                result.Products.Add(new OrderProduct
+                {
+                    ProductId = productId,
+                    OrderId = orderId
+                });
+                if (product.Options != null && product.Options.Count > 0)
+                {
+                    customOptions.AddRange(product.Options.Select(o => new CustomOption
+                    {
+                        ProductId = productId,
+                        OrderId = orderId,
+                        OptionId = Guid.Parse(o.Id),
+                        Value = o.Value
+                    }));
+                }
+            }
+            result.CustomOptions = customOptions;
+            return result;
+        }
+
+        private OrderDTO ConvertToDTO(Order order, bool convertProducts = false)
+        {
+            var result = new OrderDTO
+            {
+                Id = order.Id.ToString(),
+                CreationDate = order.CreationDate
+            };
+
+            if (convertProducts)
+            {
+                var productIds = order.Products.Select(op => op.ProductId)
+                .ToArray();
+                var products = _unitOfWork.ProductRepository.Find(p => productIds.Contains(p.Id))
+                    .ToArray();
+                var orderProducts = new List<ProductDTO>();
+                foreach (var product in products)
+                {
+                    var op = new ProductDTO
+                    {
+                        Id = product.Id.ToString(),
+                        Name = product.Name,
+                        Category = product.Category.Id.ToString(),
+                        Options = GetOptions(product, order.CustomOptions)
+                    };
+                    orderProducts.Add(op);
+                }
+                result.Products = orderProducts;
+            }
+
+            return result;
+        }
+
+        private ProductOptionDTO[] GetOptions(Product product, ICollection<CustomOption> customOptions)
+        {
+            if(product.BaseOptions == null || product.BaseOptions.Count == 0)
+                return new ProductOptionDTO[0];
+
+            var hasCustomOptions = customOptions != null && customOptions.Count > 0;
+            var result = new List<ProductOptionDTO>();
+            foreach (var opt in product.BaseOptions)
+            {
+                var option = new ProductOptionDTO
+                {
+                    Id = opt.Id.ToString(),
+                    Name = opt.Name,
+                };
+                var optionValue = opt.Value;
+
+                if (hasCustomOptions)
+                {
+                    var relatedOption = customOptions.FirstOrDefault(co => co.ProductId == product.Id && co.OptionId == opt.Id);
+                    if (relatedOption != null)
+                        optionValue = relatedOption.Value;
+                }
+                option.Value = optionValue;
+                result.Add(option);
+            }
+
+            return result.ToArray();
         }
     }
 }

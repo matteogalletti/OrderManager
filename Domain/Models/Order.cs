@@ -9,7 +9,7 @@ namespace Domain.Models
 
         public DateTime CreationDate { get; set; }
 
-        public ICollection<Product> Products {get;set;}
+        public ICollection<OrderProduct> Products {get;set;}
 
         public ICollection<CustomOption> CustomOptions { get; set; }
     }

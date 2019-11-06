@@ -20,12 +20,17 @@ namespace Domain
 
         public DbSet<CustomOption> CustomOptions { get; set; }
 
+        public DbSet<OrderProduct> OrderProducts { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Order>()
                 .HasMany(o => o.CustomOptions)
                 .WithOne(co => co.Order)
                 .HasForeignKey(co => co.OrderId);
+
+            modelBuilder.Entity<OrderProduct>()
+                .HasKey(op => new { op.OrderId, op.ProductId });
 
             modelBuilder.Entity<CustomOption>()
                 .HasKey(o => new { o.OrderId, o.ProductId, o.OptionId });

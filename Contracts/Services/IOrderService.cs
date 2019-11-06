@@ -5,6 +5,8 @@ namespace Contracts.Services
 {
     public interface IOrderService
     {
-        string CreateOrder(OrderDTO order, DateTime creationDate, out string errorMessage);
+        string CreateOrder(OrderDTO order, out string errorMessage);
+        OrderDTO GetOrder(string id);
+        OrderDTO[] GetOrders();
     }
 }

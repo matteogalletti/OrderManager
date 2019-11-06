@@ -23,16 +23,20 @@ namespace OrderManager.Controllers
 
         // GET: api/values
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<OrderDTO> Get()
         {
-            return new string[] { "value1", "value2" };
+            return _orderSvc.GetOrders();
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult Get(string id)
         {
-            return "value";
+            var order = _orderSvc.GetOrder(id);
+            if (order == null)
+                return NotFound();
+
+            return Ok(order);
         }
 
         // POST api/values
@@ -42,21 +46,11 @@ namespace OrderManager.Controllers
             if (order == null)
                 return BadRequest("Order is null");
 
-            var orderId = _orderSvc.CreateOrder(order, DateTime.Now, out string errorMessage);
+            var orderId = _orderSvc.CreateOrder(order, out string errorMessage);
+            if (errorMessage != null)
+                return BadRequest(errorMessage);
 
             return Ok(new { id = orderId });
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }
