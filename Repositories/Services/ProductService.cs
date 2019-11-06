@@ -31,6 +31,11 @@ namespace DAL.Services
         {
             if (!Guid.TryParse(product.Category, out Guid categoryId))
                 return null;
+            if (String.IsNullOrWhiteSpace(product.Name) || String.IsNullOrWhiteSpace(product.Category))
+            {
+                return null;
+            }
+
             var existingCategory = _unitOfWork.CategoryRepository
                 .Find(c => c.Id == categoryId).FirstOrDefault();
             if (existingCategory == null)

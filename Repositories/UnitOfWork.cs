@@ -23,6 +23,11 @@ namespace DAL
                     _productRepo = new BaseRepository<Product>(_context);
                 return _productRepo;
             }
+
+            set
+            {
+                _productRepo = value;
+            }
         }
 
         private IBaseRepository<Order> _orderRepo;
@@ -34,6 +39,11 @@ namespace DAL
                     _orderRepo = new BaseRepository<Order>(_context);
                 return _orderRepo;
             }
+
+            set
+            {
+                _orderRepo = value;
+            }
         }
 
         public IBaseRepository<Category> _categoryRepo;
@@ -44,6 +54,11 @@ namespace DAL
                 if (_categoryRepo == null)
                     _categoryRepo = new BaseRepository<Category>(_context);
                 return _categoryRepo;
+            }
+
+            set
+            {
+                _categoryRepo = value;
             }
         }
 
